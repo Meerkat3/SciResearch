@@ -1,0 +1,21 @@
+{
+  "nodes":[
+     {"id": "n0"},
+     {"id": "n1"},
+     {"id": "n2"},
+     {"id": "n3"},
+     {"id": "n4"},
+     {"id": "n5"},
+     {"id": "n6"},
+     {"id": "n7"}
+  ],
+  "links":[
+     {"source": "n0", "id": "e0", "target": "n1"},
+     {"source": "n0", "id": "e1", "target": "n2"},
+     {"source": "n0", "id": "e2", "target": "n3"},
+     {"source": "n0", "id": "e3", "target": "n4"},
+     {"source": "n0", "id": "e4", "target": "n5"},
+     {"source": "n0", "id": "e5", "target": "n6"},
+     {"source": "n0", "id": "e6", "target": "n7"}
+  ]
+}

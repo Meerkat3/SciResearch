@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+    .node {
+        font: 10px sans-serif;
+    }
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var width = w,
+        height = h;
+    var cluster = d3.layout.cluster()
+        .size([height - 50, width - 200]);
+    var diagonal = d3.svg.diagonal()
+        .projection(function(d) { return [d.y, d.x]; });
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(40,0)");
+    d3.json("d3-dendrogram.json", function(error, root) {
+        var nodes = cluster.nodes(root),
+            links = cluster.links(nodes);
+
+        var nodeDepthArr = [];
+        var nodeArr = [];
+        var depthWiseArr = [];
+        var nodeyArr = [];
+        nodes.forEach(function(d){
+//            console.log(d);
+            nodeArr.push(d);
+            nodeDepthArr.push(d.depth);
+            nodeyArr.push(d.y);
+
+        });
+
+        nodeArr.forEach(function(d){
+
+
+        });
+        console.log(d3.max(nodeDepthArr));
+
+        console.log(d3.set(nodeyArr));
+//        console.log(links);
+        var link = svg.selectAll(".link")
+            .data(links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", diagonal);
+        var node = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+        node.append("circle")
+            .attr("r", 4.5)
+//            ;
+            .on("click", function(d){
+//                var coords = d3.mouse(this);
+//                console.log(coords[0]+"::"+coords[1]);
+                console.log(d.x +" ::"+ d.y);
+                console.log(d.depth);
+
+            });
+        node.append("text")
+            .attr("dx", function(d) { return d.children ? -8 : 8; })
+            .attr("dy", 3)
+            .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+            .text(function(d) { return d.name; });
+    });
+    d3.select(self.frameElement).style("height", height + "px");
+</script>>

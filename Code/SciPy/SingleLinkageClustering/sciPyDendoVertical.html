@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link>
+    <link rel="stylesheet" href="d3.slider.css">
+</head>
+<style>
+    .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+    .node {
+        font: 10px sans-serif;
+    }
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="d3.slider.js"></script>
+<script>
+
+
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var width = w,
+        height = h;
+    var cluster = d3.layout.cluster()
+        .size([height - 300 , width - 240]);
+    var diagonal = d3.svg.diagonal()
+        .projection(function(d) { return [d.x, d.y]; });
+    var svg = d3.select("body").append("svg")
+        .attr("width", width/2)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(40,0)");
+    d3.json("d3-dendrogram.json", function(error, root) {
+        var nodes = cluster.nodes(root),
+            links = cluster.links(nodes);
+
+        var nodeDepthArr = [];
+        var nodeArr = [];
+        var depthWiseArr = [];
+        var nodeyArr = [];
+        nodes.forEach(function(d){
+//            console.log(d);
+            nodeArr.push(d);
+            nodeDepthArr.push(d.depth);
+            nodeyArr.push(d.y);
+
+        });
+
+        nodeArr.forEach(function(d){
+
+
+        });
+        console.log(d3.max(nodeDepthArr));
+
+        console.log(d3.set(nodeyArr));
+//        console.log(links);
+        var link = svg.selectAll(".link")
+            .data(links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", diagonal);
+        var node = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        node.append("circle")
+            .attr("r", 4.5)
+//            ;
+            .on("click", function(d){
+//                var coords = d3.mouse(this);
+//                console.log(coords[0]+"::"+coords[1]);
+                console.log(d.x +" ::"+ d.y);
+                console.log(d.depth);
+
+            });
+//        node.append("text")
+//            .attr("dx", function(d) { return d.children ? -8 : 8; })
+//            .attr("dy", 3)
+//            .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+//            .text(function(d) { return d.name; });
+    });
+//    d3.select(self.frameElement).style("height", height + "px");
+//    circle = svg.append("circle").attr("cx", 50).attr("cy", 100).attr("r", 30);
+//    var slider1 = new simpleSlider();
+//
+//    slider1.width(200).x(30).y(200).value(1.0).event(function(){
+//        circle.attr("r", 30 * slider1.value());
+//    });
+//
+//    svg.call(slider1);
+
+//    var svgBar = d3.select("body").append("svg")
+////        .attr("id","sliderDiv");
+//        .attr("width", 100)
+//        .attr("height", height)
+////        .append("g")
+//        .attr("transform", "translate(40,0)");
+//
+//    svgBar.append("foreignobject").attr("width", 100)
+//        .attr("height", height).append("div")
+//        .attr("id","slider");
+
+//    svgBar.append("g").attr("id","slider").attr("width", 100)
+//        .attr("height", height);
+
+    var slider = d3.slider().min(0).max(20).step(1).orientation("vertical")
+        .on("slide", function(evt, value) {
+//            d3.select('#slider3text').text(value);
+            console.log(value);
+        })
+    ;
+//   d3.select("#slider").call(slider);
+
+
+    d3.select("body").append("div").call(slider);
+</script>>

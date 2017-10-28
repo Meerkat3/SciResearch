@@ -1,0 +1,19 @@
+{
+  "nodes":[
+     {"id": "n0"},
+     {"id": "n1"},
+     {"id": "n2"},
+     {"id": "n3"},
+     {"id": "n4"},
+     {"id": "n5"},
+     {"id": "n6"}
+  ],
+  "links":[
+     {"source": "n6", "id": "e0", "target": "n0"},
+     {"source": "n6", "id": "e1", "target": "n1"},
+     {"source": "n6", "id": "e2", "target": "n2"},
+     {"source": "n6", "id": "e3", "target": "n3"},
+     {"source": "n6", "id": "e4", "target": "n4"},
+     {"source": "n6", "id": "e5", "target": "n5"}
+  ]
+}
