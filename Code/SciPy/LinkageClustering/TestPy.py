@@ -181,18 +181,58 @@ def getJsonStr(G):
 
     return jsonStr
 
+# j = 0
+# for dendoNodeList in dendoArr:
+#     if dendoNodeList != []:
+#         # for mergeNode in dendoNodeList:
+#         #     print(mergeNode)
+#         j += 1
+#         if j != 1:
+#             print(dendoNodeList)
+#             createMergeJson(j, dendoNodeList)
+
 j = 0
+consolidatedArr = []
+
+print("dendoArr[1] :: \n");
+print(dendoArr[1]);
+print("\n");
+
+clusterList = dendoArr[1];
+
 for dendoNodeList in dendoArr:
     if dendoNodeList != []:
         # for mergeNode in dendoNodeList:
         #     print(mergeNode)
         j += 1
         if j != 1:
+            removeList = []
+            for supernode in dendoNodeList:
+                for k in range(len(clusterList) - 1, -1, -1):
+                    print(clusterList[k])
+                    print(" :: ")
+                    print(supernode)
+                    if set(clusterList[k]) <= set(supernode):
+                        print("identified subset :: " + str(k))
+                        removeList.append(k)
+            print("removeList :: \n")
+            print(removeList)
+            for k in reversed(sorted(removeList)):
+                clusterList.pop(k)
+            clusterList.extend(dendoNodeList)
+            print("dendoNodeList after extend :: \n")
             print(dendoNodeList)
-            createMergeJson(j, dendoNodeList)
+
+            print("clusterList   :: \n")
+            print(clusterList)
+            print("\n")
+            createMergeJson(j, clusterList)
 
 
-# if __name__ == '__main__':
+
+
+
+                        # if __name__ == '__main__':
 #
 #     G = nx.read_gml('lesmis.gml', label='id')
 #     create_hc(G);
