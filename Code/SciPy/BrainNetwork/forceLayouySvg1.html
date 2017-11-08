@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link>
+<link rel="stylesheet" href="Slider/d3.slider.css">
+</head>
+<style>
+
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+    .node {
+        font: 10px sans-serif;
+    }
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+
+    .dendogram {
+        max-width: 500px;
+    }
+
+</style>
+<body>
+<div id="dropDown" align="justify" width="500" height="30"></div>
+<div id="dendogram"  style ="max-width: 500px; display: inline-block;" ></div>
+<div id="slider" align="justify" width="20" height="580" style = "display: inline-block;" ></div>
+<svg id="graph" width="500" height="580" style="float: right"></svg>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<!--<script type='text/javascript' src='js/dropDown.js'></script>-->
+<script src="Slider/d3.slider.js"></script>
+<script>
+
+
+    showDendo = function() {
+
+        console.log(d3.select("#dendogram"));
+        d3.select("#dendogram").selectAll("*").remove();
+
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var width = w,
+            height = h;
+//    console.log(height);
+//    console.log(width);
+        var cluster = d3.layout.cluster()
+            .size([400, 550]);
+//        .size([(height - 200) , (width - 240)]);
+        var diagonal = d3.svg.diagonal()
+            .projection(function (d) {
+                return [d.x, d.y];
+            });
+        var svg = d3.select("#dendogram").append("svg")
+            .attr("width", 450)
+            .attr("height", 600);
+//        .attr("transform" , "translate(0,20)");
+
+        svg.append("g")
+            .attr("transform", "translate(40,0)");
+        d3.json(window.folder + "/d3-dendrogram.json", function (error, root) {
+            var nodes = cluster.nodes(root),
+                links = cluster.links(nodes);
+
+            var nodeDepthArr = [];
+            var nodeArr = [];
+            var depthWiseArr = [];
+            var nodeyArr = [];
+            nodes.forEach(function (d) {
+//            console.log(d);
+                nodeArr.push(d);
+                nodeDepthArr.push(d.depth);
+                nodeyArr.push(d.y);
+
+            });
+
+            nodeArr.forEach(function (d) {
+
+
+            });
+            console.log(d3.max(nodeDepthArr));
+
+            console.log(d3.set(nodeyArr));
+//        console.log(links);
+            var link = svg.selectAll(".link")
+                .data(links)
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("d", diagonal);
+            var node = svg.selectAll(".node")
+                .data(nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                })
+            node.append("circle")
+                .attr("r", 4.5)
+                //            ;
+                .on("click", function (d) {
+//                var coords = d3.mouse(this);
+//                console.log(coords[0]+"::"+coords[1]);
+                    console.log(d.x + " ::" + d.y);
+                    console.log(d.depth);
+
+                });
+//        node.append("text")
+//            .attr("dx", function(d) { return d.children ? -8 : 8; })
+//            .attr("dy", 3)
+//            .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+//            .text(function(d) { return d.name; });
+        });
+
+    }
+
+
+
+    var data = ["single", "complete", "average", "median" , "centroid" , "ward" , "weighted" , "KMeans", "Metis"];
+
+    window.folder = 'single';
+
+    var select = d3.select('#dropDown')
+        .append('select')
+        .attr('class','select')
+        .on('change',onchange);
+
+    var options = select
+        .selectAll('option')
+        .data(data).enter()
+        .append('option')
+        .text(function (d) { return d; });
+
+    showDendo();
+
+    function onchange() {
+        var selectValue = d3.select('select').property('value');
+        window.folder = selectValue;
+
+        d3.select("#graph").selectAll("*").remove();
+        if (selectValue == 'KMeans')
+            showColored("KMeans/lemis20.json");
+        else if (selectValue == 'Metis')
+            showColored("Metis/lemis20.json");
+        else
+            showDendo();
+
+
+//        console.log(selectValue);
+    };
+
+
+
+    //    d3.select(self.frameElement).style("height", height + "px");
+    //    circle = svg.append("circle").attr("cx", 50).attr("cy", 100).attr("r", 30);
+    //    var slider1 = new simpleSlider();
+    //
+    //    slider1.width(200).x(30).y(200).value(1.0).event(function(){
+    //        circle.attr("r", 30 * slider1.value());
+    //    });
+    //
+    //    svg.call(slider1);
+
+    //    var svgBar = d3.select("body").append("svg")
+    ////        .attr("id","sliderDiv");
+    //        .attr("width", 100)
+    //        .attr("height", height)
+    ////        .append("g")
+    //        .attr("transform", "translate(40,0)");
+    //
+    //    svgBar.append("foreignobject").attr("width", 100)
+    //        .attr("height", height).append("div")
+    //        .attr("id","slider");
+
+    //    svgBar.append("g").attr("id","slider").attr("width", 100)
+    //        .attr("height", height);
+
+    var slider = d3.slider().min(1).max(20).step(1).orientation("vertical")
+            .on("slide", function(evt, value) {
+//            d3.select('#slider3text').text(value);
+//                console.log(Math.round(value));
+
+                changeDataIdx(Math.round(value));
+                console.log(Math.round(value));
+            })
+    ;
+    //   d3.select("#slider").call(slider);
+
+
+    d3.select("#slider").call(slider);
+
+
+    </script>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script>
+
+    execute = function (datafile) {
+
+        var svg = d3.select("#graph"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        d3.json(datafile, function(error, graph) {
+            if (error) throw error;
+
+            var link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+            var node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(graph.nodes)
+                .enter().append("circle")
+                .attr("r", 5)
+                .attr("fill", function(d) { return color(d.group); })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.append("title")
+                .text(function(d) { return d.id; });
+
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
+
+            simulation.force("link")
+                .links(graph.links);
+
+            function ticked() {
+                link
+                    .attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+
+                node
+                    .attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+        });
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    }
+//    var iter = 1;
+
+//    var button = d3.select("body").append("button");
+//    button.text("Run!");
+//    button.on("click", changeData);
+//
+//    var button = d3.select("body").append("button");
+//    button.text("Next Iteration");
+//    button.on("click", changeData);
+
+    //    var iter= 0;
+
+    function changeData() {
+
+        var children = d3.select("#graph").selectAll("*");
+        children.remove();
+        var datafile = "";
+//        if(inp ==0)
+//                iter = 0;
+        if (iter == 1 ){
+            datafile = window.folder+"lemis.json";
+            iter++;
+        }
+
+        else if (iter < 28) {
+            datafile = window.folder+"lemis" + iter + '.json';
+
+            iter++;
+        }
+        else {
+            datafile = window.folder+"lemis27.json";
+        }
+        execute(datafile);
+    }
+
+    function changeDataIdx(iter) {
+
+        var children = d3.select("#graph").selectAll("*");
+        children.remove();
+
+        var step  = 0;
+        var highest = 0 ;
+
+        switch (window.folder) {
+            case "single":
+                step = 77/20;
+                highest = 77;
+                break;
+            case "complete":
+                step = 23/20;
+                highest = 23;
+                break;
+            case "average":
+                step = 25/20;
+                highest = 25;
+                break;
+            case "centroid":
+                step = 23/20;
+                highest = 23;
+                break;
+            case "median":
+                step = 24/20;
+                highest = 24;
+                break;
+            case "ward":
+                step = 1;
+                highest = 18;
+                break;
+            case "weighted":
+                step = 36/20;
+                highest = 36;
+                break;
+            case "KMeans":
+                step = 1;
+                highest = 20;
+                break;
+            case "Metis":
+                step = 1;
+                highest = 20;
+        }
+
+        console.log(step+"  :: "+highest);
+        var datafile = "";
+        var colorDatafile = "";
+//        if(inp ==0)
+//                iter = 0;
+        if (iter == 1 || Math.round(step*(iter-1)) == 1){
+            datafile = window.folder+"/lemis.json";
+//            iter += step;
+            if (window.folder == "KMeans" || window.folder == "Metis"){
+                colorDatafile = window.folder+"/lemis20.json";
+                datafile = window.folder+"/lemisContracted20.json";
+                if (iter ==2 )
+                    colorDatafile = window.folder+"/lemis19.json";
+                    datafile = window.folder+"/lemisContracted19.json";
+
+            }
+        }
+
+        else if (iter == 20 ) {
+            datafile = window.folder+"/lemis"+highest+".json";
+
+            if (window.folder == "KMeans" || window.folder == "Metis"){
+                colorDatafile = window.folder+"/lemis"+1+".json";
+                datafile = window.folder+"/lemisContracted"+1+".json";
+            }
+//            iter += step;
+        }
+
+        else if (Math.round(step*(iter-1)) < highest) {
+            datafile = window.folder+"/lemis" + Math.round(step*(iter-1)) + '.json';
+            console.log(datafile);
+
+            if (window.folder == "KMeans" || window.folder == "Metis"){
+                colorDatafile = window.folder+"/lemis"+(highest-iter)+".json";
+                datafile = window.folder+"/lemisContracted"+(highest-iter)+".json";
+            }
+
+//            iter += step;
+        }
+        else {
+            datafile = window.folder+"/lemis"+highest+".json";
+
+            if (window.folder == "KMeans" || window.folder == "Metis"){
+                colorDatafile = window.folder+"/lemis"+1+".json";
+                datafile = window.folder+"/lemisContracted"+1+".json";
+            }
+        }
+
+        if (window.folder == "KMeans" || window.folder == "Metis") {
+            showColored(colorDatafile);
+            console.log(colorDatafile);
+        }
+
+        console.log(datafile);
+
+        execute(datafile);
+    }
+
+
+
+
+    showColored = function(datafile) {
+
+        console.log(d3.select("#dendogram"));
+        d3.select("#dendogram").selectAll("*").remove();
+
+
+        var svg = d3.select("#dendogram").append("svg").attr("width" ,500).attr("height", 580),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        d3.json(datafile, function(error, graph) {
+            if (error) throw error;
+
+            var link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+            var node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(graph.nodes)
+                .enter().append("circle")
+                .attr("r", 5)
+                .attr("fill", function(d) { return color(d.group); })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.append("title")
+                .text(function(d) { return d.id; });
+
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
+
+            simulation.force("link")
+                .links(graph.links);
+
+            function ticked() {
+                link
+                    .attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+
+                node
+                    .attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+        });
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+    }
+
+
+
+</script>
