@@ -41,10 +41,10 @@ numpy.savetxt("adjListNumpy.txt" , adj_ids, delimiter=' ', newline='\n', fmt='%d
 
 G=nx.read_adjlist("adjListNumpy.txt")
 
-linkageType = 'single'
+linkageType = 'ward'
 # Create hierarchical cluster
 Y=distance.squareform(edgeWeights)
-Z=hierarchy.single(Y)
+Z=hierarchy.ward(Y)
 # Creates HC using farthest point linkage
 # This partition selection is arbitrary, for illustrive purposes
 
@@ -83,9 +83,28 @@ def add_node(node, parent):
     if node.left: add_node(node.left, newNode)
     if node.right: add_node(node.right, newNode)
 
+
+
+
+# Create a nested dictionary from the ClusterNode's returned by SciPy
+def add_node_height(node, parent , ht):
+    # First create the new node and append it to its parent's children
+    newNode = dict(node_id=node.id, children=[])
+    parent["children"].append(newNode)
+
+    if (ht < 31):
+        # Recursively add the current node's children
+        if node.left: add_node_height(node.left, newNode, ht+1)
+        if node.right: add_node_height(node.right, newNode, ht+1)
+
 # Initialize nested dictionary for d3, then recursively iterate through tree
 d3Dendro = dict(children=[], name="Root1")
 add_node(T, d3Dendro )
+
+
+# Initialize nested dictionary for d3, then recursively iterate through tree
+d3DendroDisp = dict(children=[], name="Root1")
+add_node_height(T, d3DendroDisp , 0)
 
 dendoArr = []
 currLength = 0
@@ -137,8 +156,10 @@ def label_tree(n):
 label_tree(d3Dendro["children"][0])
 
 # Output to JSON
-json.dump(d3Dendro, open(linkageType+"/d3-dendrogram.json", "w"), sort_keys=True, indent=4)
+json.dump(d3DendroDisp, open(linkageType+"/d3-dendrogram.json", "w"), sort_keys=True, indent=4)
 
+
+filenameIdx = 0
 def createMergeJson(idx, dendoNodeList):
     G = nx.read_adjlist("adjListNumpy.txt")
     # print("\nNodelist from graph \n")
@@ -167,6 +188,11 @@ def createMergeJson(idx, dendoNodeList):
     # print(J.edges())
     # print(idx)
 
+
+    # global filenameIdx
+    print(len(J.nodes()))
+    # if (len(J.nodes())< 41):
+    # filenameIdx += 1
     jsonStr = getJsonStr(J)
     # print(jsonStr)
     # attrsG = dict(id='id', source='source', target='target', key='id')
@@ -240,8 +266,16 @@ for dendoNodeList in dendoArr:
                 clusterList.pop(k)
             clusterList.extend(dendoNodeList)
 
+            numNodes = 0
+            clusteredNodes = 0
+            for cluster in clusterList:
+                clusteredNodes += len(cluster)
 
-            if(len(clusterList) < 61 and len(clusterList) > 0 ):
+            numNodes = len(weights) - clusteredNodes + len(clusterList)
+
+
+            print(numNodes)
+            if(numNodes < 41 ):
                 fileIdx += 1
                 # print("dendoNodeList after extend :: \n")
                 # print(dendoNodeList)

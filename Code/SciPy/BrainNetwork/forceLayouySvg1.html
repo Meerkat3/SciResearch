@@ -44,6 +44,7 @@
 <script src="Slider/d3.slider.js"></script>
 <script>
 
+    window.folder = 'single';
 
     showDendo = function() {
 
@@ -127,9 +128,9 @@
 
 
 
-    var data = ["single", "complete", "average", "median" , "centroid" , "ward" , "weighted" , "KMeans", "Metis"];
+    var data = ["single", "complete", "average", "median" , "centroid" , "ward" , "weighted" ];
 
-    window.folder = 'single';
+
 
     var select = d3.select('#dropDown')
         .append('select')
@@ -325,28 +326,28 @@
 
         switch (window.folder) {
             case "single":
-                step = 77/20;
-                highest = 77;
+                step = 37/20;
+                highest = 37;
                 break;
             case "complete":
-                step = 23/20;
-                highest = 23;
+                step = 26/20;
+                highest = 26;
                 break;
             case "average":
-                step = 25/20;
-                highest = 25;
+                step = 26/20;
+                highest = 26;
                 break;
             case "centroid":
-                step = 23/20;
-                highest = 23;
+                step = 40/20;
+                highest = 40;
                 break;
             case "median":
-                step = 24/20;
-                highest = 24;
+                step = 38/20;
+                highest = 38;
                 break;
             case "ward":
-                step = 1;
-                highest = 18;
+                step = 26/20;
+                highest = 26;
                 break;
             case "weighted":
                 step = 36/20;
