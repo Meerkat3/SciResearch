@@ -215,19 +215,35 @@
         var color = d3.scaleOrdinal(d3.schemeCategory20);
 
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("link", d3.forceLink()
+                .id(function(d) {
+                console.log(d);
+                console.log(d.distance);
+                return d.id;
+            })
+//                .distance(function(d){
+//                console.log(d);
+//                return d.distance;
+//                })
+            )
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(width / 2, height / 2));
 
         d3.json(datafile, function(error, graph) {
             if (error) throw error;
 
+            console.log(graph.links);
+
             var link = svg.append("g")
                 .attr("class", "links")
                 .selectAll("line")
                 .data(graph.links)
                 .enter().append("line")
-                .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+                .attr("stroke-width", function(d) {
+                    console.log(d);
+                    console.log(d.value);
+                    return Math.sqrt(d.value);
+                });
 
             var node = svg.append("g")
                 .attr("class", "nodes")
