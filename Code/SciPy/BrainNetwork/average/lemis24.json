@@ -1,1 +1,1 @@
-{ "nodes":[ {"id": 86}, {"id": 92}, {"id": 184}], "links": [{"source": 86, "target": 92}, {"source": 86, "target": 184}, {"source": 92, "target": 184}]}
+{ "nodes":[ {"id": 86}, {"id": 92}, {"id": 184}], "links": [{"source": 86, "target": 92, "distance": 24147.5442157}, {"source": 86, "target": 184, "distance": 1138.02867923}, {"source": 92, "target": 184, "distance": 1080.90731072}]}

@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 import scipy.cluster
 import functools
 import json
+import time
+start_time = time.time()
+
 
 
 with open("0050432.txt") as f:
@@ -41,10 +44,10 @@ numpy.savetxt("adjListNumpy.txt" , adj_ids, delimiter=' ', newline='\n', fmt='%d
 
 G=nx.read_adjlist("adjListNumpy.txt")
 
-linkageType = 'ward'
+linkageType = 'weighted'
 # Create hierarchical cluster
 Y=distance.squareform(edgeWeights)
-Z=hierarchy.ward(Y)
+Z=hierarchy.weighted(Y)
 # Creates HC using farthest point linkage
 # This partition selection is arbitrary, for illustrive purposes
 
@@ -175,9 +178,19 @@ def createMergeJson(idx, dendoNodeList):
             for x in range(1, len(nodeList)):
                 I = H.pop()
                 v = nodeList[x]
+
+                unbrs = I.neighbors(u)
+                vnbrs = I.neighbors(v)
+
+                commonnbrs = [val for val in unbrs if val in vnbrs]
+
                 # print("v :: "+v)
                 # print(I.nodes())
+                for nbr in commonnbrs:
+
+                    edgeWeights[int(u)][int(nbr)] = edgeWeights[int(u)][int(nbr)] + edgeWeights[int(v)][int(nbr)]
                 H.append(nx.contracted_nodes(I, u, v, self_loops=False))
+
     J = H.pop()
     H.append(J)
 
@@ -217,7 +230,7 @@ def getJsonStr(G):
 
     j = 0
     for n in G.edges():
-        jsonStr += "{\"source\": " + str(n[0]) + ", \"target\": " + str(n[1]) + "}"
+        jsonStr += "{\"source\": " + str(n[0]) + ", \"target\": " + str(n[1]) + ", \"distance\": " + str(edgeWeights[int(n[0])][int(n[1])])+"}"
         j += 1
         if j != len(G.edges()):
             jsonStr += ", "
@@ -285,8 +298,7 @@ for dendoNodeList in dendoArr:
                 createMergeJson(fileIdx, clusterList)
 
 
-
-
+print("--- %s seconds ---" % (time.time() - start_time))
 
                         # if __name__ == '__main__':
 #
